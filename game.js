@@ -11,9 +11,6 @@ function Player(name, symbol){
 }
 
 
-const p1 = Player("Omar", "X");
-const p2 = Player("Zheng", "O");
-
 
 const gameBoard = ( () => {
     let board = [ ["", "", ""], ["", "", ""], ["", "", ""] ];
@@ -84,14 +81,86 @@ const displayController = ( () => {
 
     let board = document.querySelector("#board");
 
+    const resetButton = document.querySelector("#reset");
+    resetButton.addEventListener('click', (e) => {
+        gameBoard.reset();
+        setUpBoard();
+        document.querySelector("#result").textContent = "";
+    });
+
+    let turn = "X";
+
+    let numTurns = 0;
+    let isOver = false;
+
+
+    let p1;
+    let p2;
+
     const setUpBoard = () => {
         board.textContent = "";
         for(let i = 0; i < 9; i++){
             let square = document.createElement('div');
             square.classList.add("square");
             square.id = i;
+            square.addEventListener('click', makeMove)
+
+            board.appendChild(square);
+
+        }
+
+        let p1Name = prompt("Please enter name of the X player:");
+        let p2Name = prompt("Please enter name of the O player:");
+
+        p1 = Player(p1Name, "X");
+        p2 = Player(p2Name, "O");
+
+
+    }
+
+    const makeMove = (e) =>{
+        if(e.target.textContent === "" && !isOver){
+            e.target.textContent = turn;
+            let id = e.target.id;
+            gameBoard.add(turn, id);
+
+            toggleTurn();
+
+            if(numTurns > 4){
+                checkIfOver();
+            }
+
+
+        }
+        
+    }
+
+    const toggleTurn = () =>{
+        (turn === "X") ? turn = "O": turn = "X";
+        numTurns++;
+    }
+
+    const checkIfOver = () => {
+        let result = gameBoard.checkForWin();
+
+        if(result !== ""){
+            isOver = true;
+
+            let winner = p1.getName() === result ? p1.getName(): p2.getName();
+            displayResults(winner);
+
         }
     }
 
+    const displayResults = (winner) => {
+        let h2 = document.querySelector("#result");
+        h2.textContent = `${winner} is the winner!`;
+    }
+
+    return {setUpBoard};
 
 } )();
+
+
+
+displayController.setUpBoard();
