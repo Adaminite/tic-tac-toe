@@ -17,7 +17,7 @@ const gameBoard = ( () => {
 
     const add = (symbol, position) => {
         position = Number(position);
-        const row = Math.floor(position / 3) - 1;
+        const row = Math.floor(position / 3);
         const col = position % 3;
 
         board[row][col] = symbol;
@@ -81,24 +81,26 @@ const displayController = ( () => {
 
     let board = document.querySelector("#board");
 
-    const resetButton = document.querySelector("#reset");
+    let resetButton = document.querySelector("#reset");
     resetButton.addEventListener('click', (e) => {
         gameBoard.reset();
         setUpBoard();
         document.querySelector("#result").textContent = "";
     });
 
-    let turn = "X";
+    let turn;
+    let isOver;
 
     let numTurns = 0;
-    let isOver = false;
-
 
     let p1;
     let p2;
 
     const setUpBoard = () => {
         board.textContent = "";
+        isOver = false;
+        turn = "X";
+
         for(let i = 0; i < 9; i++){
             let square = document.createElement('div');
             square.classList.add("square");
@@ -109,8 +111,15 @@ const displayController = ( () => {
 
         }
 
-        let p1Name = prompt("Please enter name of the X player:");
-        let p2Name = prompt("Please enter name of the O player:");
+        let p1Name;
+        do{
+            p1Name = prompt("Please enter name of the X player:");
+        } while(p1Name === "" || p1Name === null);
+
+        let p2Name;
+        do{
+            p2Name = prompt("Please enter name of the O player:");
+        } while(p2Name === "" || p2Name === null);
 
         p1 = Player(p1Name, "X");
         p2 = Player(p2Name, "O");
@@ -123,13 +132,17 @@ const displayController = ( () => {
             e.target.textContent = turn;
             let id = e.target.id;
             gameBoard.add(turn, id);
-
-            toggleTurn();
+            numTurns++;
 
             if(numTurns > 4){
                 checkIfOver();
             }
 
+            toggleTurn();
+
+            if(numTurns === 9){
+                displayResults("draw");
+            }
 
         }
         
@@ -137,7 +150,7 @@ const displayController = ( () => {
 
     const toggleTurn = () =>{
         (turn === "X") ? turn = "O": turn = "X";
-        numTurns++;
+        
     }
 
     const checkIfOver = () => {
@@ -146,7 +159,7 @@ const displayController = ( () => {
         if(result !== ""){
             isOver = true;
 
-            let winner = p1.getName() === result ? p1.getName(): p2.getName();
+            let winner = p1.getSymbol() === result ? p1.getName(): p2.getName();
             displayResults(winner);
 
         }
@@ -154,7 +167,14 @@ const displayController = ( () => {
 
     const displayResults = (winner) => {
         let h2 = document.querySelector("#result");
-        h2.textContent = `${winner} is the winner!`;
+
+        if(winner === "draw"){
+            h2.textContent = "It's a tie!"
+        }
+        else{
+            h2.textContent = `${winner} is the winner!`;
+        }
+        
     }
 
     return {setUpBoard};
