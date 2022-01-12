@@ -157,11 +157,9 @@ const displayController = ( () => {
         let result = gameBoard.checkForWin();
 
         if(result !== ""){
-            isOver = true;
 
             let winner = p1.getSymbol() === result ? p1.getName(): p2.getName();
             displayResults(winner);
-
         }
     }
 
@@ -174,6 +172,8 @@ const displayController = ( () => {
         else{
             h2.textContent = `${winner} is the winner!`;
         }
+
+        isOver = true;
         
     }
 
