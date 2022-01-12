@@ -100,6 +100,7 @@ const displayController = ( () => {
         board.textContent = "";
         isOver = false;
         turn = "X";
+        numTurns = 0;
 
         for(let i = 0; i < 9; i++){
             let square = document.createElement('div');
